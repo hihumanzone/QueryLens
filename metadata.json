@@ -1,0 +1,8 @@
+{
+  "description": "Instantly solve homework problems by taking a picture and asking an AI.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "name": "QueryLens",
+  "prompt": ""
+}

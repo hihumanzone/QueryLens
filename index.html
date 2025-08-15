@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gemini Study Helper</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+    "marked": "https://esm.sh/marked@^12.0.0",
+    "dompurify": "https://esm.sh/dompurify@^3.0.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <main>
+        <!-- Camera View -->
+        <section id="camera-view" class="view">
+            <div class="video-container">
+                <video id="camera-feed" autoplay playsinline></video>
+                <button id="flash-btn" aria-label="Toggle Flashlight" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                </button>
+            </div>
+            <div class="controls">
+                <button id="capture-btn" aria-label="Capture Photo">
+                    <svg height="48px" width="48px" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".4"/>
+                        <path d="M12,7a5,5,0,1,0,5,5A5,5,0,0,0,12,7Zm0,8a3,3,0,1,1,3-3A3,3,0,0,1,12,15Z"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Preview & Edit View -->
+        <section id="preview-view" class="view hidden">
+            <div class="canvas-container">
+                <canvas id="preview-canvas"></canvas>
+                <div id="crop-box" class="hidden">
+                    <div class="crop-handle" data-handle="nw"></div>
+                    <div class="crop-handle" data-handle="ne"></div>
+                    <div class="crop-handle" data-handle="sw"></div>
+                    <div class="crop-handle" data-handle="se"></div>
+                    <div class="crop-handle" data-handle="n"></div>
+                    <div class="crop-handle" data-handle="s"></div>
+                    <div class="crop-handle" data-handle="w"></div>
+                    <div class="crop-handle" data-handle="e"></div>
+                </div>
+            </div>
+            <div class="controls edit-controls">
+                <button id="retake-btn">Retake</button>
+                <button id="rotate-btn">Rotate 90°</button>
+                <button id="confirm-btn">Use Photo</button>
+            </div>
+        </section>
+
+        <!-- Result View -->
+        <section id="result-view" class="view hidden">
+            <div id="loader" class="hidden"></div>
+            <div id="response-container">
+                 <img id="result-image-preview" src="" alt="Captured image preview" class="hidden">
+                 
+                 <div id="transcription-container" class="hidden">
+                    <div class="section-header">
+                        <h3>Transcription</h3>
+                        <button id="copy-transcription-btn" aria-label="Copy transcription">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                    <p class="section-description">Is this transcription correct? You can edit it before submitting.</p>
+                    <textarea id="transcribed-text"></textarea>
+                 </div>
+                 
+                 <div id="answer-section" class="hidden">
+                    <div class="section-header">
+                        <h3>Solution</h3>
+                        <button id="copy-btn" aria-label="Copy solution">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                    <div id="answer-container"></div>
+                 </div>
+            </div>
+
+            <div id="action-buttons" class="controls">
+                <div id="model-selector" class="model-selector hidden" role="radiogroup" aria-labelledby="model-selector-label">
+                    <span id="model-selector-label" class="model-label">Analysis Model:</span>
+                    <div class="model-options">
+                        <button id="model-flash-btn" class="active" role="radio" aria-checked="true" data-model="gemini-2.5-flash">Flash</button>
+                        <!-- Do not remove the Gemini 2.5 Pro model. -->
+                        <button id="model-pro-btn" role="radio" aria-checked="false" data-model="gemini-2.5-pro">Pro</button>
+                    </div>
+                </div>
+                <div id="initial-action-buttons" class="hidden">
+                    <button id="ask-image-btn">Solve It</button>
+                    <button id="transcribe-btn">Transcribe Text</button>
+                </div>
+                <div id="transcribed-action-buttons" class="hidden">
+                    <button id="ask-text-btn">Get Answer from Text</button>
+                </div>
+            </div>
+             <div class="controls start-over-container">
+                <button id="start-over-btn" class="hidden">Start Over</button>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -34,16 +34,57 @@ interface DOMElements {
     modelSelector: HTMLElement;
     modelFlashBtn: HTMLButtonElement;
     modelProBtn: HTMLButtonElement;
+    apiKeyModal: HTMLElement;
+    apiKeyForm: HTMLFormElement;
+    apiKeyInput: HTMLInputElement;
+    toggleApiKeyVisibilityBtn: HTMLButtonElement;
+    saveApiKeyBtn: HTMLButtonElement;
+    apiKeyError: HTMLElement;
 }
 
 class GeminiService {
     private ai: GoogleGenAI;
 
-    constructor() {
-        if (!process.env.API_KEY) {
+    constructor(apiKey?: string) {
+        const key = apiKey || this.getStoredApiKey() || process.env.API_KEY;
+        if (!key) {
             throw new Error("API key is not configured.");
         }
-        this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        this.ai = new GoogleGenAI({ apiKey: key });
+    }
+
+    private getStoredApiKey(): string | null {
+        try {
+            return localStorage.getItem('gemini-api-key');
+        } catch (error) {
+            console.warn('Could not access localStorage:', error);
+            return null;
+        }
+    }
+
+    static saveApiKey(apiKey: string): void {
+        try {
+            localStorage.setItem('gemini-api-key', apiKey);
+        } catch (error) {
+            console.error('Could not save API key to localStorage:', error);
+            throw new Error('Failed to save API key');
+        }
+    }
+
+    static hasStoredApiKey(): boolean {
+        try {
+            return !!localStorage.getItem('gemini-api-key');
+        } catch (error) {
+            return false;
+        }
+    }
+
+    static clearStoredApiKey(): void {
+        try {
+            localStorage.removeItem('gemini-api-key');
+        } catch (error) {
+            console.error('Could not clear API key from localStorage:', error);
+        }
     }
 
     private imagePartFromCanvas(canvas: HTMLCanvasElement) {
@@ -194,6 +235,41 @@ class UIManager {
     copyTranscriptionToClipboard() {
         const { transcribedTextArea, copyTranscriptionBtn } = this.elements;
         this.copyTextToClipboard(transcribedTextArea.value, copyTranscriptionBtn);
+    }
+
+    showApiKeyModal() {
+        this.elements.apiKeyModal.classList.remove('hidden');
+        this.elements.apiKeyInput.focus();
+    }
+
+    hideApiKeyModal() {
+        this.elements.apiKeyModal.classList.add('hidden');
+        this.clearApiKeyError();
+        this.elements.apiKeyInput.value = '';
+    }
+
+    showApiKeyError(message: string) {
+        this.elements.apiKeyError.textContent = message;
+        this.elements.apiKeyError.classList.remove('hidden');
+    }
+
+    clearApiKeyError() {
+        this.elements.apiKeyError.classList.add('hidden');
+        this.elements.apiKeyError.textContent = '';
+    }
+
+    toggleApiKeyVisibility() {
+        const input = this.elements.apiKeyInput;
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        
+        const svg = this.elements.toggleApiKeyVisibilityBtn.querySelector('svg path');
+        if (svg) {
+            svg.setAttribute('d', isPassword 
+                ? "M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                : "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"
+            );
+        }
     }
 }
 
@@ -480,19 +556,35 @@ class CropManager {
 class App {
     private ui: UIManager;
     private camera: CameraManager;
-    private gemini: GeminiService;
+    private gemini: GeminiService | null = null;
     private cropper: CropManager;
     private selectedModel: 'gemini-2.5-flash' | 'gemini-2.5-pro' = 'gemini-2.5-flash';
 
     constructor(private elements: DOMElements) {
         this.ui = new UIManager(elements);
         this.camera = new CameraManager(elements.videoElement, elements.canvasElement, elements.flashBtn);
-        this.gemini = new GeminiService();
         this.cropper = new CropManager(elements.cropBox, elements.canvasElement);
         this.attachEventListeners(elements);
     }
 
     async start() {
+        // Check if we need to show API key modal
+        if (!this.gemini && !GeminiService.hasStoredApiKey() && !process.env.API_KEY) {
+            this.ui.showApiKeyModal();
+            return;
+        }
+
+        // Initialize GeminiService if not already done
+        if (!this.gemini) {
+            try {
+                this.gemini = new GeminiService();
+            } catch (error) {
+                this.ui.showApiKeyModal();
+                this.ui.showApiKeyError("Failed to initialize with provided API key. Please check your key and try again.");
+                return;
+            }
+        }
+
         this.ui.resetResultView();
         this.cropper.deactivate();
         try {
@@ -519,6 +611,47 @@ class App {
         
         elements.modelFlashBtn.addEventListener('click', () => this.selectModel('gemini-2.5-flash'));
         elements.modelProBtn.addEventListener('click', () => this.selectModel('gemini-2.5-pro'));
+
+        // API Key modal event listeners
+        elements.apiKeyForm.addEventListener('submit', (e) => this.handleApiKeySubmit(e));
+        elements.toggleApiKeyVisibilityBtn.addEventListener('click', () => this.ui.toggleApiKeyVisibility());
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !elements.apiKeyModal.classList.contains('hidden')) {
+                e.preventDefault();
+                // Only allow closing if we have a working API key
+                if (GeminiService.hasStoredApiKey() || process.env.API_KEY) {
+                    this.ui.hideApiKeyModal();
+                }
+            }
+        });
+    }
+
+    private async handleApiKeySubmit(e: Event) {
+        e.preventDefault();
+        const apiKey = this.elements.apiKeyInput.value.trim();
+        
+        if (!apiKey) {
+            this.ui.showApiKeyError('Please enter an API key');
+            return;
+        }
+
+        // Validate the API key by trying to create a GeminiService instance
+        try {
+            this.ui.clearApiKeyError();
+            const testService = new GeminiService(apiKey);
+            
+            // Save the API key and initialize the service
+            GeminiService.saveApiKey(apiKey);
+            this.gemini = testService;
+            
+            this.ui.hideApiKeyModal();
+            this.start(); // Restart the app with the new API key
+        } catch (error) {
+            console.error('API Key validation error:', error);
+            this.ui.showApiKeyError('Invalid API key. Please check your key and try again.');
+        }
     }
 
     private selectModel(model: 'gemini-2.5-flash' | 'gemini-2.5-pro') {
@@ -635,6 +768,11 @@ class App {
     }
     
     private async handleGeminiRequest<T>(request: () => Promise<T>, onResult: (result: T) => void) {
+        if (!this.gemini) {
+            this.ui.displayAnswer("API key not configured. Please configure your API key first.", 'error');
+            return;
+        }
+
         this.ui.showLoader(true);
         this.ui.hideActionButtons();
         try {
@@ -650,14 +788,14 @@ class App {
     
     private solveFromImage() {
         this.handleGeminiRequest(
-            () => this.gemini.getAnswerFromImage(this.camera.getCanvas(), this.selectedModel),
+            () => this.gemini!.getAnswerFromImage(this.camera.getCanvas(), this.selectedModel),
             (text) => this.ui.displayAnswer(text, 'answer')
         );
     }
     
     private transcribeImage() {
         this.handleGeminiRequest(
-            () => this.gemini.transcribeImage(this.camera.getCanvas()),
+            () => this.gemini!.transcribeImage(this.camera.getCanvas()),
             (text) => this.ui.displayTranscriptionResult(text)
         );
     }
@@ -667,7 +805,7 @@ class App {
         if (!question.trim()) return;
 
         this.handleGeminiRequest(
-            () => this.gemini.getAnswerFromText(question, this.selectedModel),
+            () => this.gemini!.getAnswerFromText(question, this.selectedModel),
             (text) => this.ui.displayAnswer(text, 'answer')
         );
     }
@@ -706,6 +844,12 @@ document.addEventListener('DOMContentLoaded', () => {
             modelSelector: document.getElementById('model-selector')!,
             modelFlashBtn: document.getElementById('model-flash-btn') as HTMLButtonElement,
             modelProBtn: document.getElementById('model-pro-btn') as HTMLButtonElement,
+            apiKeyModal: document.getElementById('api-key-modal')!,
+            apiKeyForm: document.getElementById('api-key-form') as HTMLFormElement,
+            apiKeyInput: document.getElementById('api-key-input') as HTMLInputElement,
+            toggleApiKeyVisibilityBtn: document.getElementById('toggle-api-key-visibility') as HTMLButtonElement,
+            saveApiKeyBtn: document.getElementById('save-api-key-btn') as HTMLButtonElement,
+            apiKeyError: document.getElementById('api-key-error')!,
         };
         const app = new App(elements);
         app.start();

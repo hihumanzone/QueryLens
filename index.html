@@ -21,7 +21,6 @@
 </head>
 <body>
     <main>
-        <!-- Camera View -->
         <section id="camera-view" class="view">
             <div class="video-container">
                 <video id="camera-feed" autoplay playsinline></video>
@@ -39,7 +38,6 @@
             </div>
         </section>
 
-        <!-- Preview & Edit View -->
         <section id="preview-view" class="view hidden">
             <div class="canvas-container">
                 <canvas id="preview-canvas"></canvas>
@@ -61,7 +59,6 @@
             </div>
         </section>
 
-        <!-- Result View -->
         <section id="result-view" class="view hidden">
             <div id="loader" class="hidden"></div>
             <div id="response-container">
@@ -96,7 +93,6 @@
                     <span id="model-selector-label" class="model-label">Analysis Model:</span>
                     <div class="model-options">
                         <button id="model-flash-btn" class="active" role="radio" aria-checked="true" data-model="gemini-2.5-flash">Flash</button>
-                        <!-- Do not remove the Gemini 2.5 Pro model. -->
                         <button id="model-pro-btn" role="radio" aria-checked="false" data-model="gemini-2.5-pro">Pro</button>
                     </div>
                 </div>
@@ -114,7 +110,6 @@
         </section>
     </main>
 
-    <!-- API Key Modal -->
     <div id="api-key-modal" class="modal hidden">
         <div class="modal-content">
             <h2>Gemini API Key Required</h2>

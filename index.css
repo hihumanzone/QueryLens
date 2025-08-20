@@ -149,6 +149,7 @@ button:disabled {
     align-items: center;
     justify-content: center;
     width: 100%;
+    max-height: calc(100vh - 180px);
     min-height: 0;
     overflow: hidden;
     touch-action: none;
@@ -602,6 +603,10 @@ button:disabled {
         max-height: calc(100vh - 160px);
     }
     
+    .canvas-container {
+        max-height: calc(100vh - 160px);
+    }
+    
     .modal-content {
         padding: 1.5rem;
         max-height: 95vh;
@@ -615,6 +620,10 @@ button:disabled {
     }
     
     .video-container {
+        max-height: calc(100vh - 120px);
+    }
+    
+    .canvas-container {
         max-height: calc(100vh - 120px);
     }
     

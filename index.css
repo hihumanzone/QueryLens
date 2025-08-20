@@ -57,6 +57,7 @@ main {
     position: relative;
     width: 100%;
     flex-grow: 1;
+    max-height: calc(100vh - 180px);
     background-color: #000;
     border-radius: 8px;
     overflow: hidden;
@@ -597,6 +598,10 @@ button:disabled {
         gap: 1rem;
     }
     
+    .video-container {
+        max-height: calc(100vh - 160px);
+    }
+    
     .modal-content {
         padding: 1.5rem;
         max-height: 95vh;
@@ -607,6 +612,10 @@ button:disabled {
     main {
         padding: 0.25rem;
         gap: 0.5rem;
+    }
+    
+    .video-container {
+        max-height: calc(100vh - 120px);
     }
     
     .modal-content {

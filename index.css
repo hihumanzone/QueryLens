@@ -429,11 +429,23 @@ button:disabled {
 
 .start-over-container {
     padding-top: 0;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
 }
 
 #start-over-btn {
     border: 1px solid var(--button-bg);
     background-color: transparent;
+}
+
+#retry-btn {
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
+}
+
+#retry-btn:hover:not(:disabled) {
+    background-color: var(--accent-color-dark);
 }
 
 #loader {

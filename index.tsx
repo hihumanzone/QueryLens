@@ -16,6 +16,7 @@ interface DOMElements {
     confirmBtn: HTMLButtonElement;
     loader: HTMLElement;
     startOverBtn: HTMLButtonElement;
+    retryBtn: HTMLButtonElement;
     actionButtonsContainer: HTMLElement;
     initialActionButtons: HTMLElement;
     transcribedActionButtons: HTMLElement;
@@ -155,6 +156,7 @@ class UIManager {
         this.elements.transcribedActionButtons.classList.add('hidden');
         this.elements.modelSelector.classList.add('hidden');
         this.elements.startOverBtn.classList.add('hidden');
+        this.elements.retryBtn.classList.add('hidden');
     }
     
     prepareResultView(imageDataUrl: string) {
@@ -197,6 +199,18 @@ class UIManager {
         this.resetResultView();
         this.elements.startOverBtn.classList.remove('hidden');
         this.displayAnswer(message, 'error');
+    }
+
+    displayErrorWithRetry(message: string) {
+        this.showView('result-view');
+        this.resetResultView();
+        this.elements.startOverBtn.classList.remove('hidden');
+        this.elements.retryBtn.classList.remove('hidden');
+        this.displayAnswer(message, 'error');
+    }
+
+    hideRetryButton() {
+        this.elements.retryBtn.classList.add('hidden');
     }
     
     updateModelSelection(model: 'gemini-2.5-flash' | 'gemini-2.5-pro') {
@@ -559,6 +573,7 @@ class App {
     private gemini: GeminiService | null = null;
     private cropper: CropManager;
     private selectedModel: 'gemini-2.5-flash' | 'gemini-2.5-pro' = 'gemini-2.5-flash';
+    private lastFailedRequest: (() => void) | null = null;
 
     constructor(private elements: DOMElements) {
         this.ui = new UIManager(elements);
@@ -602,6 +617,7 @@ class App {
         elements.rotateBtn.addEventListener('click', () => this.rotatePreviewImage());
         elements.confirmBtn.addEventListener('click', () => this.confirmPhoto());
         elements.startOverBtn.addEventListener('click', () => this.start());
+        elements.retryBtn.addEventListener('click', () => this.retryLastRequest());
         elements.copyBtn.addEventListener('click', () => this.ui.copyAnswerToClipboard());
         elements.copyTranscriptionBtn.addEventListener('click', () => this.ui.copyTranscriptionToClipboard());
         
@@ -767,7 +783,7 @@ class App {
         }
     }
     
-    private async handleGeminiRequest<T>(request: () => Promise<T>, onResult: (result: T) => void) {
+    private async handleGeminiRequest<T>(request: () => Promise<T>, onResult: (result: T) => void, retryAction?: () => void) {
         if (!this.gemini) {
             this.ui.displayAnswer("API key not configured. Please configure your API key first.", 'error');
             return;
@@ -775,28 +791,57 @@ class App {
 
         this.ui.showLoader(true);
         this.ui.hideActionButtons();
+        this.ui.hideRetryButton(); // Hide retry button during request
+        
         try {
             const result = await request();
             onResult(result);
+            this.lastFailedRequest = null; // Clear any previous failed request on success
         } catch (error) {
             console.error("Gemini API Error:", error);
-            this.ui.displayAnswer("Sorry, an error occurred. Please try again.", 'error');
+            
+            // Store the retry action for later use
+            if (retryAction) {
+                this.lastFailedRequest = retryAction;
+            }
+            
+            // Provide more specific error message based on error type
+            let errorMessage = "Sorry, an error occurred. Please try again.";
+            if (error instanceof Error) {
+                if (error.message.includes('quota') || error.message.includes('rate limit')) {
+                    errorMessage = "API quota exceeded or rate limit reached. Please wait and try again.";
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage = "Network error. Please check your connection and try again.";
+                } else if (error.message.includes('authentication') || error.message.includes('unauthorized')) {
+                    errorMessage = "Authentication error. Please check your API key.";
+                }
+            }
+            
+            this.ui.displayErrorWithRetry(errorMessage);
         } finally {
             this.ui.showLoader(false);
+        }
+    }
+    
+    private retryLastRequest() {
+        if (this.lastFailedRequest) {
+            this.lastFailedRequest();
         }
     }
     
     private solveFromImage() {
         this.handleGeminiRequest(
             () => this.gemini!.getAnswerFromImage(this.camera.getCanvas(), this.selectedModel),
-            (text) => this.ui.displayAnswer(text, 'answer')
+            (text) => this.ui.displayAnswer(text, 'answer'),
+            () => this.solveFromImage()
         );
     }
     
     private transcribeImage() {
         this.handleGeminiRequest(
             () => this.gemini!.transcribeImage(this.camera.getCanvas()),
-            (text) => this.ui.displayTranscriptionResult(text)
+            (text) => this.ui.displayTranscriptionResult(text),
+            () => this.transcribeImage()
         );
     }
     
@@ -806,7 +851,8 @@ class App {
 
         this.handleGeminiRequest(
             () => this.gemini!.getAnswerFromText(question, this.selectedModel),
-            (text) => this.ui.displayAnswer(text, 'answer')
+            (text) => this.ui.displayAnswer(text, 'answer'),
+            () => this.solveFromText()
         );
     }
 }
@@ -826,6 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmBtn: document.getElementById('confirm-btn') as HTMLButtonElement,
             loader: document.getElementById('loader')!,
             startOverBtn: document.getElementById('start-over-btn') as HTMLButtonElement,
+            retryBtn: document.getElementById('retry-btn') as HTMLButtonElement,
             actionButtonsContainer: document.getElementById('action-buttons')!,
             initialActionButtons: document.getElementById('initial-action-buttons')!,
             transcribedActionButtons: document.getElementById('transcribed-action-buttons')!,

@@ -38,7 +38,7 @@ html, body {
     height: 100%;
     background-color: var(--primary-bg);
     color: var(--primary-text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -255,30 +255,38 @@ button:focus-visible {
 
 .crop-handle {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background-color: var(--accent-color);
-    border: 1px solid var(--primary-bg);
+    border: 2px solid var(--primary-bg);
+    border-radius: 2px;
     z-index: 11;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.crop-handle:hover {
+    background-color: var(--accent-color-light);
+    transform: scale(1.1);
 }
 
 .crop-handle::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    bottom: -12px;
 }
 
-[data-handle="nw"] { top: -5px; left: -5px; cursor: nwse-resize; }
-[data-handle="ne"] { top: -5px; right: -5px; cursor: nesw-resize; }
-[data-handle="sw"] { bottom: -5px; left: -5px; cursor: nesw-resize; }
-[data-handle="se"] { bottom: -5px; right: -5px; cursor: nwse-resize; }
-[data-handle="n"] { top: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-[data-handle="s"] { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
-[data-handle="w"] { top: 50%; left: -5px; transform: translateY(-50%); cursor: ew-resize; }
-[data-handle="e"] { top: 50%; right: -5px; transform: translateY(-50%); cursor: ew-resize; }
+[data-handle="nw"] { top: -6px; left: -6px; cursor: nwse-resize; }
+[data-handle="ne"] { top: -6px; right: -6px; cursor: nesw-resize; }
+[data-handle="sw"] { bottom: -6px; left: -6px; cursor: nesw-resize; }
+[data-handle="se"] { bottom: -6px; right: -6px; cursor: nwse-resize; }
+[data-handle="n"] { top: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+[data-handle="s"] { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+[data-handle="w"] { top: 50%; left: -6px; transform: translateY(-50%); cursor: ew-resize; }
+[data-handle="e"] { top: 50%; right: -6px; transform: translateY(-50%); cursor: ew-resize; }
 
 
 #result-view {
@@ -300,7 +308,6 @@ button:focus-visible {
     flex-direction: column;
     align-items: center;
     box-shadow: 0 4px 20px var(--shadow-color);
-}
 }
 
 #result-image-preview {
@@ -391,6 +398,11 @@ button:focus-visible {
     width: 100%;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+    line-height: 1.7;
+}
+
+#answer-container p {
+    margin-bottom: var(--spacing-md);
 }
 
 #answer-container p:last-of-type {
@@ -398,50 +410,56 @@ button:focus-visible {
 }
 
 #answer-container ul, #answer-container ol {
-    margin-left: 1rem;
-    margin-bottom: 0;
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-sm);
 }
 
 #answer-container li {
-    margin-bottom: 0;
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.6;
 }
 
 #answer-container strong, #answer-container b {
-    font-weight: 700;
+    font-weight: 600;
     color: var(--primary-text);
 }
 
 #answer-container em, #answer-container i {
     font-style: italic;
+    color: var(--accent-color-light);
 }
 
 #answer-container code {
-    background-color: var(--button-bg);
-    padding: 0.2em 0.4em;
+    background-color: var(--tertiary-bg);
+    color: var(--accent-color-light);
+    padding: 0.2em 0.5em;
     margin: 0;
-    font-size: 85%;
-    border-radius: 3px;
-    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    border-radius: var(--radius-sm);
+    font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    border: 1px solid var(--border-color);
 }
 
 #answer-container pre {
-    background-color: #0d0d0d;
-    border: 1px solid var(--button-bg);
-    border-radius: 4px;
-    padding: 0.75rem;
+    background-color: var(--tertiary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
     overflow-x: auto;
     white-space: pre;
-    margin: 0.5rem 0;
+    margin: var(--spacing-md) 0;
+    box-shadow: inset 0 2px 4px var(--shadow-color);
 }
 
 #answer-container pre code {
     background-color: transparent;
+    color: var(--primary-text);
     padding: 0;
     margin: 0;
     font-size: inherit;
     border-radius: 0;
-    white-space: pre-wrap;
-    word-break: break-all;
+    border: none;
 }
 
 

@@ -7,33 +7,38 @@
     <link rel="stylesheet" href="index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <script type="importmap">
 {
   "imports": {
     "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
     "marked": "https://esm.sh/marked@^12.0.0",
-    "dompurify": "https://esm.sh/dompurify@^3.0.0"
+    "dompurify": "https://esm.sh/dompurify@^3.0.0",
+    "@material/web/": "https://esm.run/@material/web/"
   }
 }
 </script>
+<script type="module">
+import '@material/web/all.js';
+import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
     <main>
         <section id="camera-view" class="view">
             <div class="video-container">
                 <video id="camera-feed" autoplay playsinline></video>
-                <button id="flash-btn" aria-label="Toggle Flashlight" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
-                </button>
+                <md-icon-button id="flash-btn" aria-label="Toggle Flashlight" disabled>
+                    <md-icon>flash_on</md-icon>
+                </md-icon-button>
             </div>
             <div class="controls">
-                <button id="capture-btn" aria-label="Capture Photo">
-                    <svg height="48px" width="48px" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".4"/>
-                        <path d="M12,7a5,5,0,1,0,5,5A5,5,0,0,0,12,7Zm0,8a3,3,0,1,1,3-3A3,3,0,0,1,12,15Z"/>
-                    </svg>
-                </button>
+                <md-fab id="capture-btn" size="large" aria-label="Capture Photo">
+                    <md-icon slot="icon">camera_alt</md-icon>
+                </md-fab>
             </div>
         </section>
 
@@ -52,9 +57,9 @@
                 </div>
             </div>
             <div class="controls edit-controls">
-                <button id="retake-btn">Retake</button>
-                <button id="rotate-btn">Rotate 90°</button>
-                <button id="confirm-btn">Use Photo</button>
+                <md-outlined-button id="retake-btn">Retake</md-outlined-button>
+                <md-outlined-button id="rotate-btn">Rotate 90°</md-outlined-button>
+                <md-filled-button id="confirm-btn">Use Photo</md-filled-button>
             </div>
         </section>
 
@@ -66,22 +71,20 @@
                  <div id="transcription-container" class="hidden">
                     <div class="section-header">
                         <h3>Transcription</h3>
-                        <button id="copy-transcription-btn" aria-label="Copy transcription">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
-                            <span>Copy</span>
-                        </button>
+                        <md-icon-button id="copy-transcription-btn" aria-label="Copy transcription">
+                            <md-icon>content_copy</md-icon>
+                        </md-icon-button>
                     </div>
                     <p class="section-description">Is this transcription correct? You can edit it before submitting.</p>
-                    <textarea id="transcribed-text"></textarea>
+                    <md-outlined-text-field id="transcribed-text" type="textarea" rows="4" label="Transcribed text"></md-outlined-text-field>
                  </div>
                  
                  <div id="answer-section" class="hidden">
                     <div class="section-header">
                         <h3>Solution</h3>
-                        <button id="copy-btn" aria-label="Copy solution">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
-                            <span>Copy</span>
-                        </button>
+                        <md-icon-button id="copy-btn" aria-label="Copy solution">
+                            <md-icon>content_copy</md-icon>
+                        </md-icon-button>
                     </div>
                     <div id="answer-container"></div>
                  </div>
@@ -90,52 +93,49 @@
             <div id="action-buttons" class="controls">
                 <div id="model-selector" class="model-selector hidden" role="radiogroup" aria-labelledby="model-selector-label">
                     <span id="model-selector-label" class="model-label">Analysis Model:</span>
-                    <div class="model-options">
-                        <button id="model-flash-btn" class="active" role="radio" aria-checked="true" data-model="gemini-2.5-flash">Flash</button>
-                        <button id="model-pro-btn" role="radio" aria-checked="false" data-model="gemini-2.5-pro">Pro</button>
-                    </div>
+                    <md-segmented-button-set id="model-button-set">
+                        <md-segmented-button id="model-flash-btn" data-model="gemini-2.5-flash" selected>Flash</md-segmented-button>
+                        <md-segmented-button id="model-pro-btn" data-model="gemini-2.5-pro">Pro</md-segmented-button>
+                    </md-segmented-button-set>
                 </div>
                 <div id="initial-action-buttons" class="hidden">
-                    <button id="ask-image-btn">Solve It</button>
-                    <button id="transcribe-btn">Transcribe Text</button>
+                    <md-filled-button id="ask-image-btn">Solve It</md-filled-button>
+                    <md-outlined-button id="transcribe-btn">Transcribe Text</md-outlined-button>
                 </div>
                 <div id="transcribed-action-buttons" class="hidden">
-                    <button id="ask-text-btn">Get Answer from Text</button>
+                    <md-filled-button id="ask-text-btn">Get Answer from Text</md-filled-button>
                 </div>
             </div>
              <div class="controls start-over-container">
-                <button id="retry-btn" class="hidden">Retry</button>
-                <button id="start-over-btn" class="hidden">Start Over</button>
+                <md-text-button id="retry-btn" class="hidden">Retry</md-text-button>
+                <md-outlined-button id="start-over-btn" class="hidden">Start Over</md-outlined-button>
             </div>
         </section>
     </main>
 
-    <div id="api-key-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Gemini API Key Required</h2>
+    <md-dialog id="api-key-modal">
+        <div slot="headline">Gemini API Key Required</div>
+        <form slot="content" id="api-key-form">
             <p>Please enter your Google Gemini API key to use this application.</p>
             <p class="help-text">
                 <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer">
                     Get your free API key from Google AI Studio
                 </a>
             </p>
-            <form id="api-key-form">
-                <div class="form-group">
-                    <label for="api-key-input">API Key:</label>
-                    <input type="password" id="api-key-input" placeholder="Enter your Gemini API key" required>
-                    <button type="button" id="toggle-api-key-visibility" aria-label="Toggle API key visibility">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" id="save-api-key-btn">Save API Key</button>
-                </div>
-            </form>
+            <div class="form-group">
+                <md-outlined-text-field id="api-key-input" label="API Key" type="password" placeholder="Enter your Gemini API key" required>
+                    <md-icon-button slot="trailing-icon" id="toggle-api-key-visibility" aria-label="Toggle API key visibility">
+                        <md-icon>visibility</md-icon>
+                    </md-icon-button>
+                </md-outlined-text-field>
+            </div>
             <div id="api-key-error" class="error-message hidden"></div>
+        </form>
+        <div slot="actions">
+            <md-text-button form="api-key-form">Cancel</md-text-button>
+            <md-filled-button type="submit" form="api-key-form" id="save-api-key-btn">Save API Key</md-filled-button>
         </div>
-    </div>
+    </md-dialog>
 
     <script type="module" src="index.tsx"></script>
 </body>

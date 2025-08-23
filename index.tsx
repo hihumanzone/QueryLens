@@ -3,43 +3,61 @@ import { GoogleGenAI } from "@google/genai";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
+// Material Web component types
+declare global {
+    namespace JSX {
+        interface IntrinsicElements {
+            'md-fab': any;
+            'md-filled-button': any;
+            'md-outlined-button': any;
+            'md-text-button': any;
+            'md-icon-button': any;
+            'md-icon': any;
+            'md-segmented-button-set': any;
+            'md-segmented-button': any;
+            'md-outlined-text-field': any;
+            'md-dialog': any;
+        }
+    }
+}
+
 interface DOMElements {
     cameraView: HTMLElement;
     previewView: HTMLElement;
     resultView: HTMLElement;
     videoElement: HTMLVideoElement;
     canvasElement: HTMLCanvasElement;
-    flashBtn: HTMLButtonElement;
-    captureBtn: HTMLButtonElement;
-    retakeBtn: HTMLButtonElement;
-    rotateBtn: HTMLButtonElement;
-    confirmBtn: HTMLButtonElement;
+    flashBtn: HTMLElement; // md-icon-button
+    captureBtn: HTMLElement; // md-fab
+    retakeBtn: HTMLElement; // md-outlined-button
+    rotateBtn: HTMLElement; // md-outlined-button
+    confirmBtn: HTMLElement; // md-filled-button
     loader: HTMLElement;
-    startOverBtn: HTMLButtonElement;
-    retryBtn: HTMLButtonElement;
+    startOverBtn: HTMLElement; // md-outlined-button
+    retryBtn: HTMLElement; // md-text-button
     actionButtonsContainer: HTMLElement;
     initialActionButtons: HTMLElement;
     transcribedActionButtons: HTMLElement;
-    askImageBtn: HTMLButtonElement;
-    transcribeBtn: HTMLButtonElement;
-    askTextBtn: HTMLButtonElement;
+    askImageBtn: HTMLElement; // md-filled-button
+    transcribeBtn: HTMLElement; // md-outlined-button
+    askTextBtn: HTMLElement; // md-filled-button
     responseContainer: HTMLElement;
     transcriptionContainer: HTMLElement;
-    transcribedTextArea: HTMLTextAreaElement;
+    transcribedTextArea: HTMLElement; // md-outlined-text-field
     answerSection: HTMLElement;
     answerContainer: HTMLElement;
-    copyBtn: HTMLButtonElement;
-    copyTranscriptionBtn: HTMLButtonElement;
+    copyBtn: HTMLElement; // md-icon-button
+    copyTranscriptionBtn: HTMLElement; // md-icon-button
     resultImagePreview: HTMLImageElement;
     cropBox: HTMLElement;
     modelSelector: HTMLElement;
-    modelFlashBtn: HTMLButtonElement;
-    modelProBtn: HTMLButtonElement;
-    apiKeyModal: HTMLElement;
+    modelFlashBtn: HTMLElement; // md-segmented-button
+    modelProBtn: HTMLElement; // md-segmented-button
+    apiKeyModal: HTMLElement; // md-dialog
     apiKeyForm: HTMLFormElement;
-    apiKeyInput: HTMLInputElement;
-    toggleApiKeyVisibilityBtn: HTMLButtonElement;
-    saveApiKeyBtn: HTMLButtonElement;
+    apiKeyInput: HTMLElement; // md-outlined-text-field
+    toggleApiKeyVisibilityBtn: HTMLElement; // md-icon-button
+    saveApiKeyBtn: HTMLElement; // md-filled-button
     apiKeyError: HTMLElement;
 }
 
@@ -148,7 +166,7 @@ class UIManager {
         this.showLoader(false);
         this.elements.answerContainer.innerHTML = '';
         this.elements.answerSection.classList.add('hidden');
-        this.elements.transcribedTextArea.value = '';
+        (this.elements.transcribedTextArea as any).value = '';
         this.elements.transcriptionContainer.classList.add('hidden');
         this.elements.resultImagePreview.classList.add('hidden');
         this.elements.resultImagePreview.src = '';
@@ -170,7 +188,7 @@ class UIManager {
     }
     
     displayTranscriptionResult(text: string) {
-        this.elements.transcribedTextArea.value = text;
+        (this.elements.transcribedTextArea as any).value = text;
         this.elements.transcriptionContainer.classList.remove('hidden');
         this.elements.initialActionButtons.classList.add('hidden');
         this.elements.transcribedActionButtons.classList.remove('hidden');
@@ -191,7 +209,7 @@ class UIManager {
     }
 
     getTranscribedText(): string {
-        return this.elements.transcribedTextArea.value;
+        return (this.elements.transcribedTextArea as any).value;
     }
 
     displayError(message: string) {
@@ -215,10 +233,8 @@ class UIManager {
     
     updateModelSelection(model: 'gemini-2.5-flash' | 'gemini-2.5-pro') {
         const isFlash = model === 'gemini-2.5-flash';
-        this.elements.modelFlashBtn.classList.toggle('active', isFlash);
-        this.elements.modelFlashBtn.setAttribute('aria-checked', String(isFlash));
-        this.elements.modelProBtn.classList.toggle('active', !isFlash);
-        this.elements.modelProBtn.setAttribute('aria-checked', String(!isFlash));
+        (this.elements.modelFlashBtn as any).selected = isFlash;
+        (this.elements.modelProBtn as any).selected = !isFlash;
     }
     
     private copyTextToClipboard(text: string, button: HTMLButtonElement) {
@@ -227,11 +243,11 @@ class UIManager {
                 const buttonTextSpan = button.querySelector('span');
                 if (buttonTextSpan) {
                     const originalText = buttonTextSpan.textContent;
-                    button.disabled = true;
+                    (button as any).disabled = true;
                     buttonTextSpan.textContent = 'Copied!';
                     setTimeout(() => {
                         buttonTextSpan.textContent = originalText;
-                        button.disabled = false;
+                        (button as any).disabled = false;
                     }, 2000);
                 }
             }).catch(err => {
@@ -248,18 +264,18 @@ class UIManager {
     
     copyTranscriptionToClipboard() {
         const { transcribedTextArea, copyTranscriptionBtn } = this.elements;
-        this.copyTextToClipboard(transcribedTextArea.value, copyTranscriptionBtn);
+        this.copyTextToClipboard((transcribedTextArea as any).value, copyTranscriptionBtn);
     }
 
     showApiKeyModal() {
-        this.elements.apiKeyModal.classList.remove('hidden');
-        this.elements.apiKeyInput.focus();
+        (this.elements.apiKeyModal as any).show();
+        (this.elements.apiKeyInput as any).focus();
     }
 
     hideApiKeyModal() {
-        this.elements.apiKeyModal.classList.add('hidden');
+        (this.elements.apiKeyModal as any).close();
         this.clearApiKeyError();
-        this.elements.apiKeyInput.value = '';
+        (this.elements.apiKeyInput as any).value = '';
     }
 
     showApiKeyError(message: string) {
@@ -311,7 +327,7 @@ class CameraManager {
             
             this.videoTrack = this.stream.getVideoTracks()[0];
             const capabilities = this.videoTrack.getCapabilities() as any;
-            this.flashBtn.disabled = !capabilities.torch;
+            (this.flashBtn as any).disabled = !capabilities.torch;
             this.isFlashOn = false;
             this.flashBtn.classList.remove('on');
         } catch(err) {
@@ -646,7 +662,7 @@ class App {
 
     private async handleApiKeySubmit(e: Event) {
         e.preventDefault();
-        const apiKey = this.elements.apiKeyInput.value.trim();
+        const apiKey = (this.elements.apiKeyInput as any).value.trim();
         
         if (!apiKey) {
             this.ui.showApiKeyError('Please enter an API key');

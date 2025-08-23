@@ -1,17 +1,56 @@
 
 :root {
-    --primary-bg: #0f0f0f;
-    --secondary-bg: #1a1a1a;
-    --tertiary-bg: #262626;
-    --primary-text: #f5f5f5;
-    --secondary-text: #b3b3b3;
-    --accent-color: #00d4aa;
-    --accent-color-dark: #00b894;
-    --accent-color-light: #26de81;
-    --button-bg: #2a2a2a;
-    --button-bg-hover: #404040;
-    --border-color: #404040;
-    --error-color: #ff6b6b;
+    /* Material Design 3 color tokens */
+    --md-sys-color-primary: #00d4aa;
+    --md-sys-color-on-primary: #003027;
+    --md-sys-color-primary-container: #005046;
+    --md-sys-color-on-primary-container: #5df5d6;
+    --md-sys-color-secondary: #b1ccc5;
+    --md-sys-color-on-secondary: #1c352f;
+    --md-sys-color-secondary-container: #334b46;
+    --md-sys-color-on-secondary-container: #cde8e1;
+    --md-sys-color-tertiary: #a5cadb;
+    --md-sys-color-on-tertiary: #063543;
+    --md-sys-color-tertiary-container: #214b5a;
+    --md-sys-color-on-tertiary-container: #c1e6f7;
+    --md-sys-color-error: #ff6b6b;
+    --md-sys-color-on-error: #ffffff;
+    --md-sys-color-error-container: #93000a;
+    --md-sys-color-on-error-container: #ffdad6;
+    --md-sys-color-background: #0f0f0f;
+    --md-sys-color-on-background: #f5f5f5;
+    --md-sys-color-surface: #0f0f0f;
+    --md-sys-color-on-surface: #f5f5f5;
+    --md-sys-color-surface-variant: #404943;
+    --md-sys-color-on-surface-variant: #bfc9c2;
+    --md-sys-color-outline: #899389;
+    --md-sys-color-outline-variant: #404943;
+    --md-sys-color-shadow: #000000;
+    --md-sys-color-surface-tint: #00d4aa;
+    --md-sys-color-inverse-surface: #e0e3df;
+    --md-sys-color-inverse-on-surface: #2e312e;
+    --md-sys-color-inverse-primary: #006b5b;
+    --md-sys-color-surface-dim: #0f0f0f;
+    --md-sys-color-surface-bright: #353835;
+    --md-sys-color-surface-container-lowest: #0a0f0d;
+    --md-sys-color-surface-container-low: #171d1a;
+    --md-sys-color-surface-container: #1b211e;
+    --md-sys-color-surface-container-high: #252b28;
+    --md-sys-color-surface-container-highest: #303633;
+
+    /* Legacy variables for custom components */
+    --primary-bg: var(--md-sys-color-background);
+    --secondary-bg: var(--md-sys-color-surface-container-low);
+    --tertiary-bg: var(--md-sys-color-surface-container);
+    --primary-text: var(--md-sys-color-on-background);
+    --secondary-text: var(--md-sys-color-on-surface-variant);
+    --accent-color: var(--md-sys-color-primary);
+    --accent-color-dark: var(--md-sys-color-primary-container);
+    --accent-color-light: var(--md-sys-color-on-primary-container);
+    --button-bg: var(--md-sys-color-surface-container);
+    --button-bg-hover: var(--md-sys-color-surface-container-high);
+    --border-color: var(--md-sys-color-outline-variant);
+    --error-color: var(--md-sys-color-error);
     --success-color: #51cf66;
     --warning-color: #ffd43b;
     --shadow-color: rgba(0, 0, 0, 0.3);
@@ -36,9 +75,9 @@
 
 html, body {
     height: 100%;
-    background-color: var(--primary-bg);
-    color: var(--primary-text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-background);
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -117,23 +156,136 @@ main {
     justify-content: center;
 }
 
-button {
-    background-color: var(--button-bg);
-    color: var(--primary-text);
-    border: 1px solid var(--border-color);
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-md);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-medium);
-    display: inline-flex;
-    align-items: center;
+/* Material Design component customizations */
+md-fab {
+    --md-fab-container-color: var(--md-sys-color-primary);
+    --md-fab-icon-color: var(--md-sys-color-on-primary);
+}
+
+md-filled-button {
+    --md-filled-button-container-color: var(--md-sys-color-primary);
+    --md-filled-button-label-text-color: var(--md-sys-color-on-primary);
+}
+
+md-outlined-button {
+    --md-outlined-button-outline-color: var(--md-sys-color-outline);
+    --md-outlined-button-label-text-color: var(--md-sys-color-primary);
+}
+
+md-text-button {
+    --md-text-button-label-text-color: var(--md-sys-color-primary);
+}
+
+md-icon-button {
+    --md-icon-button-icon-color: var(--md-sys-color-on-surface);
+}
+
+.video-container md-icon-button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    --md-icon-button-icon-color: white;
+    --md-icon-button-state-layer-color: rgba(255, 255, 255, 0.1);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+}
+
+md-segmented-button-set {
+    --md-segmented-button-outline-color: var(--md-sys-color-outline);
+}
+
+md-segmented-button {
+    --md-segmented-button-label-text-color: var(--md-sys-color-on-surface);
+    --md-segmented-button-selected-container-color: var(--md-sys-color-primary);
+    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-primary);
+}
+
+md-outlined-text-field {
+    --md-outlined-text-field-outline-color: var(--md-sys-color-outline);
+    --md-outlined-text-field-focus-outline-color: var(--md-sys-color-primary);
+    --md-outlined-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
+    --md-outlined-text-field-input-text-color: var(--md-sys-color-on-surface);
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+md-dialog {
+    --md-dialog-container-color: var(--md-sys-color-surface-container-high);
+    --md-dialog-headline-color: var(--md-sys-color-on-surface);
+}
+
+/* Additional Material Design component spacing and layout */
+.controls {
+    display: flex;
     justify-content: center;
-    touch-action: manipulation;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    position: relative;
-    overflow: hidden;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) 0;
+    width: 100%;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.controls > div {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+}
+
+.section-header h3 {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--md-sys-color-on-surface);
+    letter-spacing: -0.025em;
+}
+
+/* Ensure text field has proper width */
+md-outlined-text-field[type="textarea"] {
+    width: 100%;
+    --md-outlined-text-field-container-shape: 8px;
+}
+
+/* Form group styling for dialog */
+.form-group {
+    margin-bottom: var(--spacing-lg);
+    width: 100%;
+}
+
+/* Error message styling */
+.error-message {
+    color: var(--md-sys-color-error);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-sm);
+    text-align: center;
+}
+
+/* Help text styling */
+.help-text {
+    margin: var(--spacing-md) 0;
+    font-size: 0.9rem;
+    color: var(--md-sys-color-on-surface-variant);
+    text-align: center;
+}
+
+.help-text a {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.help-text a:hover {
+    color: var(--md-sys-color-on-primary-container);
+    text-decoration: underline;
 }
 
 button:hover:not(:disabled) {
@@ -158,52 +310,6 @@ button:disabled {
 button:focus-visible {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
-}
-
-#capture-btn {
-    background-color: transparent;
-    border: 2px solid rgba(255,255,255,0.7);
-    padding: 3px;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-}
-
-#capture-btn:hover:not(:disabled) {
-    border-color: var(--accent-color);
-    background-color: rgba(255,255,255,0.1);
-}
-
-#capture-btn svg {
-    display: block;
-}
-
-#flash-btn {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    background: rgba(0,0,0,0.6);
-    padding: 0.6rem;
-    border-radius: 50%;
-    z-index: 10;
-    border: 1px solid rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
-    width: 48px;
-    height: 48px;
-}
-
-#flash-btn:hover:not(:disabled) {
-    background: rgba(0,0,0,0.8);
-    border-color: var(--accent-color);
-}
-
-#flash-btn.on {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-#flash-btn.on svg {
-    fill: var(--primary-bg);
 }
 
 .canvas-container {
@@ -495,51 +601,19 @@ button:focus-visible {
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
     padding: var(--spacing-md);
-    background-color: var(--secondary-bg);
+    background-color: var(--md-sys-color-surface-container);
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .model-label {
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--primary-text);
+    color: var(--md-sys-color-on-surface);
     white-space: nowrap;
 }
 
-.model-options {
-    display: flex;
-    background-color: var(--tertiary-bg);
-    padding: 4px;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-}
-
-.model-options button {
-    background-color: transparent;
-    border: none;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-sm);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    color: var(--primary-text);
-    box-shadow: none;
-    transform: none;
-}
-
-.model-options button.active {
-    background-color: var(--accent-color);
-    color: var(--primary-bg);
-    box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-.model-options button:not(.active):hover {
-    background-color: var(--button-bg);
-    box-shadow: none;
-    transform: none;
-}
+/* Remove old model-options styles since we're using md-segmented-button-set */
 
 #transcribed-action-buttons {
     display: flex;

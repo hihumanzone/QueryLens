@@ -10,9 +10,7 @@ export default defineConfig(({ mode }) => {
       },
       build: {
         rollupOptions: {
-          external: [
-            /@material\/web\/.*/
-          ]
+          external: [/@material\/web\/.*/]
         }
       },
       resolve: {

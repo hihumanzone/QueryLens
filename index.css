@@ -156,28 +156,49 @@ main {
     justify-content: center;
 }
 
-/* Material Design component customizations */
+/* Enhanced Material Design component customizations */
 md-fab {
     --md-fab-container-color: var(--md-sys-color-primary);
     --md-fab-icon-color: var(--md-sys-color-on-primary);
+    --md-fab-container-elevation: 3;
+    --md-fab-container-shadow-color: var(--md-sys-color-shadow);
 }
 
 md-filled-button {
     --md-filled-button-container-color: var(--md-sys-color-primary);
     --md-filled-button-label-text-color: var(--md-sys-color-on-primary);
+    --md-filled-button-container-elevation: 1;
+    --md-filled-button-container-shadow-color: var(--md-sys-color-shadow);
+    --md-filled-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
+    --md-filled-button-container-shape: 20px;
+    --md-filled-button-container-height: 40px;
 }
 
 md-outlined-button {
     --md-outlined-button-outline-color: var(--md-sys-color-outline);
     --md-outlined-button-label-text-color: var(--md-sys-color-primary);
+    --md-outlined-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
+    --md-outlined-button-container-shape: 20px;
+    --md-outlined-button-container-height: 40px;
+    --md-outlined-button-hover-state-layer-color: var(--md-sys-color-primary);
+    --md-outlined-button-hover-state-layer-opacity: 0.08;
 }
 
 md-text-button {
     --md-text-button-label-text-color: var(--md-sys-color-primary);
+    --md-text-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
+    --md-text-button-container-shape: 20px;
+    --md-text-button-container-height: 40px;
+    --md-text-button-hover-state-layer-color: var(--md-sys-color-primary);
+    --md-text-button-hover-state-layer-opacity: 0.08;
 }
 
 md-icon-button {
     --md-icon-button-icon-color: var(--md-sys-color-on-surface);
+    --md-icon-button-container-size: 40px;
+    --md-icon-button-icon-size: 24px;
+    --md-icon-button-hover-state-layer-color: var(--md-sys-color-on-surface);
+    --md-icon-button-hover-state-layer-opacity: 0.08;
 }
 
 .video-container md-icon-button {
@@ -193,12 +214,22 @@ md-icon-button {
 
 md-segmented-button-set {
     --md-segmented-button-outline-color: var(--md-sys-color-outline);
+    --md-segmented-button-container-height: 40px;
+    --md-segmented-button-with-icon-container-height: 40px;
+    flex: 1;
 }
 
 md-segmented-button {
+    --md-segmented-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
     --md-segmented-button-label-text-color: var(--md-sys-color-on-surface);
-    --md-segmented-button-selected-container-color: var(--md-sys-color-primary);
-    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-primary);
+    --md-segmented-button-outline-color: var(--md-sys-color-outline);
+    --md-segmented-button-selected-container-color: var(--md-sys-color-secondary-container);
+    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-secondary-container);
+    --md-segmented-button-selected-outline-color: var(--md-sys-color-secondary);
+    --md-segmented-button-unselected-hover-container-color: var(--md-sys-color-surface-container-highest);
+    --md-segmented-button-container-shape: 20px;
+    min-width: 72px;
+    flex: 1;
 }
 
 md-outlined-text-field {
@@ -206,13 +237,43 @@ md-outlined-text-field {
     --md-outlined-text-field-focus-outline-color: var(--md-sys-color-primary);
     --md-outlined-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
     --md-outlined-text-field-input-text-color: var(--md-sys-color-on-surface);
+    --md-outlined-text-field-container-shape: 12px;
+    --md-outlined-text-field-label-text-font: 400 1rem 'Roboto', sans-serif;
+    --md-outlined-text-field-input-text-font: 400 1rem 'Roboto', sans-serif;
     width: 100%;
     margin-bottom: 1rem;
+}
+
+/* Special styling for textarea variant */
+md-outlined-text-field[type="textarea"] {
+    --md-outlined-text-field-container-shape: 12px;
+    min-height: 100px;
 }
 
 md-dialog {
     --md-dialog-container-color: var(--md-sys-color-surface-container-high);
     --md-dialog-headline-color: var(--md-sys-color-on-surface);
+    --md-dialog-container-shape: 24px;
+    --md-dialog-supporting-text-color: var(--md-sys-color-on-surface-variant);
+    margin: auto;
+}
+
+md-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(4px);
+}
+
+md-dialog[open] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    max-width: 560px;
+    max-height: 80vh;
+    margin: auto;
+    border: none;
+    padding: 0;
 }
 
 /* Additional Material Design component spacing and layout */
@@ -221,7 +282,7 @@ md-dialog {
     justify-content: center;
     align-items: center;
     gap: var(--spacing-md);
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-lg) 0;
     width: 100%;
     flex-shrink: 0;
     flex-wrap: wrap;
@@ -232,6 +293,27 @@ md-dialog {
     gap: var(--spacing-md);
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+}
+
+/* Ensure proper spacing for button groups */
+#initial-action-buttons,
+#transcribed-action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+}
+
+.start-over-container {
+    padding-top: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .section-header {
@@ -257,8 +339,35 @@ md-outlined-text-field[type="textarea"] {
 
 /* Form group styling for dialog */
 .form-group {
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
     width: 100%;
+}
+
+.form-group md-outlined-text-field {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Dialog content padding and spacing */
+md-dialog .form-group:last-child {
+    margin-bottom: var(--spacing-md);
+}
+
+md-dialog [slot="content"] {
+    padding: 0 var(--spacing-lg);
+    min-width: 280px;
+}
+
+md-dialog [slot="headline"] {
+    padding: var(--spacing-lg) var(--spacing-lg) 0;
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+md-dialog [slot="actions"] {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+    gap: var(--spacing-md);
+    justify-content: flex-end;
 }
 
 /* Error message styling */
@@ -600,17 +709,38 @@ button:focus-visible {
     align-items: center;
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     background-color: var(--md-sys-color-surface-container);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .model-label {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--md-sys-color-on-surface);
     white-space: nowrap;
+    min-width: fit-content;
+}
+
+md-segmented-button-set {
+    --md-segmented-button-container-height: 40px;
+    --md-segmented-button-with-icon-container-height: 40px;
+    flex: 1;
+}
+
+md-segmented-button {
+    --md-segmented-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
+    --md-segmented-button-label-text-color: var(--md-sys-color-on-surface);
+    --md-segmented-button-outline-color: var(--md-sys-color-outline);
+    --md-segmented-button-selected-container-color: var(--md-sys-color-secondary-container);
+    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-secondary-container);
+    --md-segmented-button-selected-outline-color: var(--md-sys-color-secondary);
+    --md-segmented-button-unselected-hover-container-color: var(--md-sys-color-surface-container-highest);
+    --md-segmented-button-container-shape: 20px;
+    min-width: 72px;
+    flex: 1;
 }
 
 /* Remove old model-options styles since we're using md-segmented-button-set */

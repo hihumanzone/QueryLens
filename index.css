@@ -172,6 +172,10 @@ md-filled-button {
     --md-filled-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
     --md-filled-button-container-shape: 20px;
     --md-filled-button-container-height: 40px;
+    --md-filled-button-leading-space: 24px;
+    --md-filled-button-trailing-space: 24px;
+    --md-filled-button-with-icon-leading-space: 16px;
+    --md-filled-button-with-icon-trailing-space: 24px;
 }
 
 md-outlined-button {
@@ -180,6 +184,10 @@ md-outlined-button {
     --md-outlined-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
     --md-outlined-button-container-shape: 20px;
     --md-outlined-button-container-height: 40px;
+    --md-outlined-button-leading-space: 24px;
+    --md-outlined-button-trailing-space: 24px;
+    --md-outlined-button-with-icon-leading-space: 16px;
+    --md-outlined-button-with-icon-trailing-space: 24px;
     --md-outlined-button-hover-state-layer-color: var(--md-sys-color-primary);
     --md-outlined-button-hover-state-layer-opacity: 0.08;
 }
@@ -189,6 +197,10 @@ md-text-button {
     --md-text-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
     --md-text-button-container-shape: 20px;
     --md-text-button-container-height: 40px;
+    --md-text-button-leading-space: 12px;
+    --md-text-button-trailing-space: 12px;
+    --md-text-button-with-icon-leading-space: 12px;
+    --md-text-button-with-icon-trailing-space: 16px;
     --md-text-button-hover-state-layer-color: var(--md-sys-color-primary);
     --md-text-button-hover-state-layer-opacity: 0.08;
 }
@@ -197,8 +209,11 @@ md-icon-button {
     --md-icon-button-icon-color: var(--md-sys-color-on-surface);
     --md-icon-button-container-size: 40px;
     --md-icon-button-icon-size: 24px;
+    --md-icon-button-state-layer-size: 40px;
     --md-icon-button-hover-state-layer-color: var(--md-sys-color-on-surface);
     --md-icon-button-hover-state-layer-opacity: 0.08;
+    --md-icon-button-pressed-state-layer-color: var(--md-sys-color-on-surface);
+    --md-icon-button-pressed-state-layer-opacity: 0.12;
 }
 
 .video-container md-icon-button {
@@ -216,6 +231,10 @@ md-segmented-button-set {
     --md-segmented-button-outline-color: var(--md-sys-color-outline);
     --md-segmented-button-container-height: 40px;
     --md-segmented-button-with-icon-container-height: 40px;
+    border-radius: 20px;
+    background-color: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline);
+    overflow: hidden;
     flex: 1;
 }
 
@@ -223,11 +242,17 @@ md-segmented-button {
     --md-segmented-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
     --md-segmented-button-label-text-color: var(--md-sys-color-on-surface);
     --md-segmented-button-outline-color: var(--md-sys-color-outline);
-    --md-segmented-button-selected-container-color: var(--md-sys-color-secondary-container);
-    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-secondary-container);
-    --md-segmented-button-selected-outline-color: var(--md-sys-color-secondary);
+    --md-segmented-button-selected-container-color: var(--md-sys-color-primary);
+    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-primary);
+    --md-segmented-button-selected-outline-color: var(--md-sys-color-primary);
+    --md-segmented-button-unselected-container-color: transparent;
+    --md-segmented-button-unselected-label-text-color: var(--md-sys-color-on-surface);
+    --md-segmented-button-unselected-outline-color: var(--md-sys-color-outline);
     --md-segmented-button-unselected-hover-container-color: var(--md-sys-color-surface-container-highest);
+    --md-segmented-button-unselected-hover-label-text-color: var(--md-sys-color-on-surface);
     --md-segmented-button-container-shape: 20px;
+    --md-segmented-button-leading-space: 16px;
+    --md-segmented-button-trailing-space: 16px;
     min-width: 72px;
     flex: 1;
 }
@@ -240,6 +265,10 @@ md-outlined-text-field {
     --md-outlined-text-field-container-shape: 12px;
     --md-outlined-text-field-label-text-font: 400 1rem 'Roboto', sans-serif;
     --md-outlined-text-field-input-text-font: 400 1rem 'Roboto', sans-serif;
+    --md-outlined-text-field-leading-space: 16px;
+    --md-outlined-text-field-trailing-space: 16px;
+    --md-outlined-text-field-top-space: 16px;
+    --md-outlined-text-field-bottom-space: 16px;
     width: 100%;
     margin-bottom: 1rem;
 }
@@ -704,6 +733,7 @@ button:focus-visible {
     gap: var(--spacing-md);
 }
 
+/* Model selector container enhanced */
 #model-selector {
     display: flex;
     align-items: center;
@@ -722,25 +752,6 @@ button:focus-visible {
     color: var(--md-sys-color-on-surface);
     white-space: nowrap;
     min-width: fit-content;
-}
-
-md-segmented-button-set {
-    --md-segmented-button-container-height: 40px;
-    --md-segmented-button-with-icon-container-height: 40px;
-    flex: 1;
-}
-
-md-segmented-button {
-    --md-segmented-button-label-text-font: 500 0.875rem 'Roboto', sans-serif;
-    --md-segmented-button-label-text-color: var(--md-sys-color-on-surface);
-    --md-segmented-button-outline-color: var(--md-sys-color-outline);
-    --md-segmented-button-selected-container-color: var(--md-sys-color-secondary-container);
-    --md-segmented-button-selected-label-text-color: var(--md-sys-color-on-secondary-container);
-    --md-segmented-button-selected-outline-color: var(--md-sys-color-secondary);
-    --md-segmented-button-unselected-hover-container-color: var(--md-sys-color-surface-container-highest);
-    --md-segmented-button-container-shape: 20px;
-    min-width: 72px;
-    flex: 1;
 }
 
 /* Remove old model-options styles since we're using md-segmented-button-set */

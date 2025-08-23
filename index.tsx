@@ -9,37 +9,37 @@ interface DOMElements {
     resultView: HTMLElement;
     videoElement: HTMLVideoElement;
     canvasElement: HTMLCanvasElement;
-    flashBtn: HTMLButtonElement;
-    captureBtn: HTMLButtonElement;
-    retakeBtn: HTMLButtonElement;
-    rotateBtn: HTMLButtonElement;
-    confirmBtn: HTMLButtonElement;
+    flashBtn: HTMLElement; // md-filled-icon-button
+    captureBtn: HTMLElement; // md-fab
+    retakeBtn: HTMLElement; // md-outlined-button
+    rotateBtn: HTMLElement; // md-outlined-button
+    confirmBtn: HTMLElement; // md-filled-button
     loader: HTMLElement;
-    startOverBtn: HTMLButtonElement;
-    retryBtn: HTMLButtonElement;
+    startOverBtn: HTMLElement; // md-outlined-button
+    retryBtn: HTMLElement; // md-outlined-button
     actionButtonsContainer: HTMLElement;
     initialActionButtons: HTMLElement;
     transcribedActionButtons: HTMLElement;
-    askImageBtn: HTMLButtonElement;
-    transcribeBtn: HTMLButtonElement;
-    askTextBtn: HTMLButtonElement;
+    askImageBtn: HTMLElement; // md-filled-button
+    transcribeBtn: HTMLElement; // md-outlined-button
+    askTextBtn: HTMLElement; // md-filled-button
     responseContainer: HTMLElement;
     transcriptionContainer: HTMLElement;
-    transcribedTextArea: HTMLTextAreaElement;
+    transcribedTextArea: HTMLElement; // md-outlined-text-field
     answerSection: HTMLElement;
     answerContainer: HTMLElement;
-    copyBtn: HTMLButtonElement;
-    copyTranscriptionBtn: HTMLButtonElement;
+    copyBtn: HTMLElement; // md-filled-icon-button
+    copyTranscriptionBtn: HTMLElement; // md-filled-icon-button
     resultImagePreview: HTMLImageElement;
     cropBox: HTMLElement;
     modelSelector: HTMLElement;
-    modelFlashBtn: HTMLButtonElement;
-    modelProBtn: HTMLButtonElement;
-    apiKeyModal: HTMLElement;
+    modelFlashBtn: HTMLElement; // md-filled-button
+    modelProBtn: HTMLElement; // md-outlined-button
+    apiKeyModal: HTMLElement; // md-dialog
     apiKeyForm: HTMLFormElement;
-    apiKeyInput: HTMLInputElement;
-    toggleApiKeyVisibilityBtn: HTMLButtonElement;
-    saveApiKeyBtn: HTMLButtonElement;
+    apiKeyInput: HTMLElement; // md-outlined-text-field
+    toggleApiKeyVisibilityBtn: HTMLElement; // md-icon-button
+    saveApiKeyBtn: HTMLElement; // md-filled-button
     apiKeyError: HTMLElement;
 }
 
@@ -148,7 +148,7 @@ class UIManager {
         this.showLoader(false);
         this.elements.answerContainer.innerHTML = '';
         this.elements.answerSection.classList.add('hidden');
-        this.elements.transcribedTextArea.value = '';
+        (this.elements.transcribedTextArea as any).value = '';
         this.elements.transcriptionContainer.classList.add('hidden');
         this.elements.resultImagePreview.classList.add('hidden');
         this.elements.resultImagePreview.src = '';
@@ -170,7 +170,7 @@ class UIManager {
     }
     
     displayTranscriptionResult(text: string) {
-        this.elements.transcribedTextArea.value = text;
+        (this.elements.transcribedTextArea as any).value = text;
         this.elements.transcriptionContainer.classList.remove('hidden');
         this.elements.initialActionButtons.classList.add('hidden');
         this.elements.transcribedActionButtons.classList.remove('hidden');
@@ -191,7 +191,7 @@ class UIManager {
     }
 
     getTranscribedText(): string {
-        return this.elements.transcribedTextArea.value;
+        return (this.elements.transcribedTextArea as any).value;
     }
 
     displayError(message: string) {
@@ -248,18 +248,18 @@ class UIManager {
     
     copyTranscriptionToClipboard() {
         const { transcribedTextArea, copyTranscriptionBtn } = this.elements;
-        this.copyTextToClipboard(transcribedTextArea.value, copyTranscriptionBtn);
+        this.copyTextToClipboard((transcribedTextArea as any).value, copyTranscriptionBtn);
     }
 
     showApiKeyModal() {
-        this.elements.apiKeyModal.classList.remove('hidden');
-        this.elements.apiKeyInput.focus();
+        (this.elements.apiKeyModal as any).show();
+        (this.elements.apiKeyInput as any).focus();
     }
 
     hideApiKeyModal() {
-        this.elements.apiKeyModal.classList.add('hidden');
+        (this.elements.apiKeyModal as any).close();
         this.clearApiKeyError();
-        this.elements.apiKeyInput.value = '';
+        (this.elements.apiKeyInput as any).value = '';
     }
 
     showApiKeyError(message: string) {
@@ -273,7 +273,7 @@ class UIManager {
     }
 
     toggleApiKeyVisibility() {
-        const input = this.elements.apiKeyInput;
+        const input = this.elements.apiKeyInput as any;
         const isPassword = input.type === 'password';
         input.type = isPassword ? 'text' : 'password';
         
@@ -646,7 +646,7 @@ class App {
 
     private async handleApiKeySubmit(e: Event) {
         e.preventDefault();
-        const apiKey = this.elements.apiKeyInput.value.trim();
+        const apiKey = (this.elements.apiKeyInput as any).value.trim();
         
         if (!apiKey) {
             this.ui.showApiKeyError('Please enter an API key');
@@ -865,37 +865,37 @@ document.addEventListener('DOMContentLoaded', () => {
             resultView: document.getElementById('result-view')!,
             videoElement: document.getElementById('camera-feed') as HTMLVideoElement,
             canvasElement: document.getElementById('preview-canvas') as HTMLCanvasElement,
-            flashBtn: document.getElementById('flash-btn') as HTMLButtonElement,
-            captureBtn: document.getElementById('capture-btn') as HTMLButtonElement,
-            retakeBtn: document.getElementById('retake-btn') as HTMLButtonElement,
-            rotateBtn: document.getElementById('rotate-btn') as HTMLButtonElement,
-            confirmBtn: document.getElementById('confirm-btn') as HTMLButtonElement,
+            flashBtn: document.getElementById('flash-btn')!,
+            captureBtn: document.getElementById('capture-btn')!,
+            retakeBtn: document.getElementById('retake-btn')!,
+            rotateBtn: document.getElementById('rotate-btn')!,
+            confirmBtn: document.getElementById('confirm-btn')!,
             loader: document.getElementById('loader')!,
-            startOverBtn: document.getElementById('start-over-btn') as HTMLButtonElement,
-            retryBtn: document.getElementById('retry-btn') as HTMLButtonElement,
+            startOverBtn: document.getElementById('start-over-btn')!,
+            retryBtn: document.getElementById('retry-btn')!,
             actionButtonsContainer: document.getElementById('action-buttons')!,
             initialActionButtons: document.getElementById('initial-action-buttons')!,
             transcribedActionButtons: document.getElementById('transcribed-action-buttons')!,
-            askImageBtn: document.getElementById('ask-image-btn') as HTMLButtonElement,
-            transcribeBtn: document.getElementById('transcribe-btn') as HTMLButtonElement,
-            askTextBtn: document.getElementById('ask-text-btn') as HTMLButtonElement,
+            askImageBtn: document.getElementById('ask-image-btn')!,
+            transcribeBtn: document.getElementById('transcribe-btn')!,
+            askTextBtn: document.getElementById('ask-text-btn')!,
             responseContainer: document.getElementById('response-container')!,
             transcriptionContainer: document.getElementById('transcription-container')!,
-            transcribedTextArea: document.getElementById('transcribed-text') as HTMLTextAreaElement,
+            transcribedTextArea: document.getElementById('transcribed-text')!,
             answerSection: document.getElementById('answer-section')!,
             answerContainer: document.getElementById('answer-container')!,
-            copyBtn: document.getElementById('copy-btn') as HTMLButtonElement,
-            copyTranscriptionBtn: document.getElementById('copy-transcription-btn') as HTMLButtonElement,
+            copyBtn: document.getElementById('copy-btn')!,
+            copyTranscriptionBtn: document.getElementById('copy-transcription-btn')!,
             resultImagePreview: document.getElementById('result-image-preview') as HTMLImageElement,
             cropBox: document.getElementById('crop-box')!,
             modelSelector: document.getElementById('model-selector')!,
-            modelFlashBtn: document.getElementById('model-flash-btn') as HTMLButtonElement,
-            modelProBtn: document.getElementById('model-pro-btn') as HTMLButtonElement,
+            modelFlashBtn: document.getElementById('model-flash-btn')!,
+            modelProBtn: document.getElementById('model-pro-btn')!,
             apiKeyModal: document.getElementById('api-key-modal')!,
             apiKeyForm: document.getElementById('api-key-form') as HTMLFormElement,
-            apiKeyInput: document.getElementById('api-key-input') as HTMLInputElement,
-            toggleApiKeyVisibilityBtn: document.getElementById('toggle-api-key-visibility') as HTMLButtonElement,
-            saveApiKeyBtn: document.getElementById('save-api-key-btn') as HTMLButtonElement,
+            apiKeyInput: document.getElementById('api-key-input')!,
+            toggleApiKeyVisibilityBtn: document.getElementById('toggle-api-key-visibility')!,
+            saveApiKeyBtn: document.getElementById('save-api-key-btn')!,
             apiKeyError: document.getElementById('api-key-error')!,
         };
         const app = new App(elements);

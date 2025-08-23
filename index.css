@@ -1,19 +1,56 @@
 
 :root {
-    --primary-bg: #0f0f0f;
-    --secondary-bg: #1a1a1a;
-    --tertiary-bg: #262626;
-    --primary-text: #f5f5f5;
-    --secondary-text: #b3b3b3;
-    --accent-color: #00d4aa;
-    --accent-color-dark: #00b894;
-    --accent-color-light: #26de81;
-    --button-bg: #2a2a2a;
-    --button-bg-hover: #404040;
-    --border-color: #404040;
-    --error-color: #ff6b6b;
-    --success-color: #51cf66;
-    --warning-color: #ffd43b;
+    /* Material Design 3 Design Tokens */
+    --md-sys-color-primary: #00d4aa;
+    --md-sys-color-on-primary: #003225;
+    --md-sys-color-primary-container: #004d3a;
+    --md-sys-color-on-primary-container: #5cffcf;
+    --md-sys-color-secondary: #b1ccc2;
+    --md-sys-color-on-secondary: #1c352d;
+    --md-sys-color-secondary-container: #334c43;
+    --md-sys-color-on-secondary-container: #cdacde;
+    --md-sys-color-tertiary: #a6cddb;
+    --md-sys-color-on-tertiary: #0f3540;
+    --md-sys-color-tertiary-container: #2a4c57;
+    --md-sys-color-on-tertiary-container: #c2e9f7;
+    --md-sys-color-error: #ffb4ab;
+    --md-sys-color-on-error: #690005;
+    --md-sys-color-error-container: #93000a;
+    --md-sys-color-on-error-container: #ffdad6;
+    --md-sys-color-background: #0f0f0f;
+    --md-sys-color-on-background: #e1e3de;
+    --md-sys-color-surface: #101413;
+    --md-sys-color-on-surface: #e1e3de;
+    --md-sys-color-surface-variant: #3f4945;
+    --md-sys-color-on-surface-variant: #bfc9c2;
+    --md-sys-color-outline: #8a938d;
+    --md-sys-color-outline-variant: #3f4945;
+    --md-sys-color-surface-dim: #101413;
+    --md-sys-color-surface-bright: #363a36;
+    --md-sys-color-surface-container-lowest: #0b0f0d;
+    --md-sys-color-surface-container-low: #191d1a;
+    --md-sys-color-surface-container: #1d211e;
+    --md-sys-color-surface-container-high: #272b28;
+    --md-sys-color-surface-container-highest: #323633;
+    --md-sys-color-inverse-surface: #e1e3de;
+    --md-sys-color-inverse-on-surface: #2e312e;
+    --md-sys-color-inverse-primary: #006e52;
+    
+    /* Legacy variables for compatibility */
+    --primary-bg: var(--md-sys-color-background);
+    --secondary-bg: var(--md-sys-color-surface-container);
+    --tertiary-bg: var(--md-sys-color-surface-container-high);
+    --primary-text: var(--md-sys-color-on-background);
+    --secondary-text: var(--md-sys-color-on-surface-variant);
+    --accent-color: var(--md-sys-color-primary);
+    --accent-color-dark: var(--md-sys-color-primary-container);
+    --accent-color-light: var(--md-sys-color-on-primary-container);
+    --button-bg: var(--md-sys-color-surface-container-high);
+    --button-bg-hover: var(--md-sys-color-surface-container-highest);
+    --border-color: var(--md-sys-color-outline-variant);
+    --error-color: var(--md-sys-color-error);
+    --success-color: var(--md-sys-color-primary);
+    --warning-color: var(--md-sys-color-tertiary);
     --shadow-color: rgba(0, 0, 0, 0.3);
     --shadow-color-strong: rgba(0, 0, 0, 0.5);
     --transition-fast: 0.15s ease-out;
@@ -776,6 +813,86 @@ button:focus-visible {
     background-color: rgba(255, 107, 107, 0.1);
     border-radius: var(--radius-md);
     border-left: 3px solid var(--error-color);
+}
+
+/* Material Design 3 Component Overrides */
+md-filled-button, md-outlined-button, md-text-button {
+    --md-filled-button-container-color: var(--md-sys-color-primary);
+    --md-filled-button-label-text-color: var(--md-sys-color-on-primary);
+    --md-outlined-button-outline-color: var(--md-sys-color-outline);
+    --md-outlined-button-label-text-color: var(--md-sys-color-primary);
+    --md-text-button-label-text-color: var(--md-sys-color-primary);
+    margin: 4px;
+}
+
+md-fab {
+    --md-fab-container-color: var(--md-sys-color-primary-container);
+    --md-fab-icon-color: var(--md-sys-color-on-primary-container);
+    --md-fab-container-elevation: 3;
+}
+
+md-filled-icon-button, md-icon-button {
+    --md-filled-icon-button-container-color: var(--md-sys-color-primary);
+    --md-filled-icon-button-icon-color: var(--md-sys-color-on-primary);
+    --md-icon-button-icon-color: var(--md-sys-color-on-surface-variant);
+}
+
+md-outlined-text-field, md-filled-text-field {
+    --md-outlined-text-field-outline-color: var(--md-sys-color-outline);
+    --md-outlined-text-field-focus-outline-color: var(--md-sys-color-primary);
+    --md-outlined-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
+    --md-outlined-text-field-input-text-color: var(--md-sys-color-on-surface);
+    --md-filled-text-field-container-color: var(--md-sys-color-surface-container-highest);
+    width: 100%;
+    margin: 8px 0;
+}
+
+md-dialog {
+    --md-dialog-container-color: var(--md-sys-color-surface-container-high);
+}
+
+/* Custom styles for better spacing and layout */
+.section-header md-filled-icon-button {
+    margin-left: auto;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    width: 100%;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.controls md-filled-button,
+.controls md-outlined-button,
+.controls md-text-button {
+    margin: 2px;
+}
+
+.model-options {
+    display: flex;
+    gap: 8px;
+}
+
+.model-options md-filled-button,
+.model-options md-outlined-button {
+    margin: 0;
+}
+
+/* FAB positioning in camera view */
+#capture-btn {
+    position: relative;
+    z-index: 10;
+}
+
+/* Dialog form styles */
+md-dialog .form-group {
+    margin-bottom: var(--spacing-lg);
+    position: relative;
 }
 
 @media screen and (max-height: 800px) {

@@ -13,9 +13,23 @@
   "imports": {
     "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
     "marked": "https://esm.sh/marked@^12.0.0",
-    "dompurify": "https://esm.sh/dompurify@^3.0.0"
+    "dompurify": "https://esm.sh/dompurify@^3.0.0",
+    "@material/web/": "https://esm.run/@material/web/"
   }
 }
+</script>
+<script type="module">
+  import '@material/web/button/filled-button.js';
+  import '@material/web/button/outlined-button.js';
+  import '@material/web/button/text-button.js';
+  import '@material/web/textfield/outlined-text-field.js';
+  import '@material/web/dialog/dialog.js';
+  import '@material/web/iconbutton/icon-button.js';
+  import '@material/web/checkbox/checkbox.js';
+  import '@material/web/radio/radio.js';
+  import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
+
+  document.adoptedStyleSheets.push(typescaleStyles.styleSheet);
 </script>
 </head>
 <body>
@@ -52,9 +66,9 @@
                 </div>
             </div>
             <div class="controls edit-controls">
-                <button id="retake-btn">Retake</button>
-                <button id="rotate-btn">Rotate 90°</button>
-                <button id="confirm-btn">Use Photo</button>
+                <md-text-button id="retake-btn">Retake</md-text-button>
+                <md-outlined-button id="rotate-btn">Rotate 90°</md-outlined-button>
+                <md-filled-button id="confirm-btn">Use Photo</md-filled-button>
             </div>
         </section>
 
@@ -65,23 +79,21 @@
                  
                  <div id="transcription-container" class="hidden">
                     <div class="section-header">
-                        <h3>Transcription</h3>
-                        <button id="copy-transcription-btn" aria-label="Copy transcription">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
-                            <span>Copy</span>
-                        </button>
+                        <h3 class="md-typescale-headline-small">Transcription</h3>
+                        <md-icon-button id="copy-transcription-btn" aria-label="Copy transcription">
+                            <svg slot="icon" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
+                        </md-icon-button>
                     </div>
-                    <p class="section-description">Is this transcription correct? You can edit it before submitting.</p>
+                    <p class="section-description md-typescale-body-medium">Is this transcription correct? You can edit it before submitting.</p>
                     <textarea id="transcribed-text"></textarea>
                  </div>
                  
                  <div id="answer-section" class="hidden">
                     <div class="section-header">
-                        <h3>Solution</h3>
-                        <button id="copy-btn" aria-label="Copy solution">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
-                            <span>Copy</span>
-                        </button>
+                        <h3 class="md-typescale-headline-small">Solution</h3>
+                        <md-icon-button id="copy-btn" aria-label="Copy solution">
+                            <svg slot="icon" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 0 24 24" width="18px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2zM8 21V7h11v14H8z"/></svg>
+                        </md-icon-button>
                     </div>
                     <div id="answer-container"></div>
                  </div>
@@ -89,53 +101,56 @@
 
             <div id="action-buttons" class="controls">
                 <div id="model-selector" class="model-selector hidden" role="radiogroup" aria-labelledby="model-selector-label">
-                    <span id="model-selector-label" class="model-label">Analysis Model:</span>
+                    <span id="model-selector-label" class="model-label md-typescale-label-medium">Analysis Model:</span>
                     <div class="model-options">
-                        <button id="model-flash-btn" class="active" role="radio" aria-checked="true" data-model="gemini-2.5-flash">Flash</button>
-                        <button id="model-pro-btn" role="radio" aria-checked="false" data-model="gemini-2.5-pro">Pro</button>
+                        <md-outlined-button id="model-flash-btn" class="active" role="radio" aria-checked="true" data-model="gemini-2.5-flash">Flash</md-outlined-button>
+                        <md-outlined-button id="model-pro-btn" role="radio" aria-checked="false" data-model="gemini-2.5-pro">Pro</md-outlined-button>
                     </div>
                 </div>
                 <div id="initial-action-buttons" class="hidden">
-                    <button id="ask-image-btn">Solve It</button>
-                    <button id="transcribe-btn">Transcribe Text</button>
+                    <md-filled-button id="ask-image-btn">Solve It</md-filled-button>
+                    <md-outlined-button id="transcribe-btn">Transcribe Text</md-outlined-button>
                 </div>
                 <div id="transcribed-action-buttons" class="hidden">
-                    <button id="ask-text-btn">Get Answer from Text</button>
+                    <md-filled-button id="ask-text-btn">Get Answer from Text</md-filled-button>
                 </div>
             </div>
              <div class="controls start-over-container">
-                <button id="retry-btn" class="hidden">Retry</button>
-                <button id="start-over-btn" class="hidden">Start Over</button>
+                <md-text-button id="retry-btn" class="hidden">Retry</md-text-button>
+                <md-outlined-button id="start-over-btn" class="hidden">Start Over</md-outlined-button>
             </div>
         </section>
     </main>
 
-    <div id="api-key-modal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Gemini API Key Required</h2>
-            <p>Please enter your Google Gemini API key to use this application.</p>
-            <p class="help-text">
+    <md-dialog id="api-key-modal" class="modal">
+        <div slot="headline">Gemini API Key Required</div>
+        <form slot="content" id="api-key-form">
+            <p class="md-typescale-body-medium">Please enter your Google Gemini API key to use this application.</p>
+            <p class="help-text md-typescale-body-medium">
                 <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer">
                     Get your free API key from Google AI Studio
                 </a>
             </p>
-            <form id="api-key-form">
-                <div class="form-group">
-                    <label for="api-key-input">API Key:</label>
-                    <input type="password" id="api-key-input" placeholder="Enter your Gemini API key" required>
-                    <button type="button" id="toggle-api-key-visibility" aria-label="Toggle API key visibility">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <div class="form-group">
+                <md-outlined-text-field 
+                    id="api-key-input" 
+                    label="API Key"
+                    placeholder="Enter your Gemini API key" 
+                    type="password"
+                    required>
+                    <md-icon-button slot="trailing-icon" id="toggle-api-key-visibility" aria-label="Toggle API key visibility">
+                        <svg slot="icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                         </svg>
-                    </button>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" id="save-api-key-btn">Save API Key</button>
-                </div>
-            </form>
+                    </md-icon-button>
+                </md-outlined-text-field>
+            </div>
             <div id="api-key-error" class="error-message hidden"></div>
+        </form>
+        <div slot="actions">
+            <md-filled-button type="submit" id="save-api-key-btn" form="api-key-form">Save API Key</md-filled-button>
         </div>
-    </div>
+    </md-dialog>
 
     <script type="module" src="index.tsx"></script>
 </body>

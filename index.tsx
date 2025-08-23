@@ -252,14 +252,20 @@ class UIManager {
     }
 
     showApiKeyModal() {
-        this.elements.apiKeyModal.classList.remove('hidden');
-        this.elements.apiKeyInput.focus();
+        const modal = this.elements.apiKeyModal as any;
+        modal.open = true;
+        // Focus the input after dialog opens
+        setTimeout(() => {
+            this.elements.apiKeyInput.focus();
+        }, 100);
     }
 
     hideApiKeyModal() {
-        this.elements.apiKeyModal.classList.add('hidden');
+        const modal = this.elements.apiKeyModal as any;
+        modal.open = false;
         this.clearApiKeyError();
-        this.elements.apiKeyInput.value = '';
+        const input = this.elements.apiKeyInput as any;
+        input.value = '';
     }
 
     showApiKeyError(message: string) {
@@ -273,7 +279,7 @@ class UIManager {
     }
 
     toggleApiKeyVisibility() {
-        const input = this.elements.apiKeyInput;
+        const input = this.elements.apiKeyInput as any;
         const isPassword = input.type === 'password';
         input.type = isPassword ? 'text' : 'password';
         
@@ -646,7 +652,8 @@ class App {
 
     private async handleApiKeySubmit(e: Event) {
         e.preventDefault();
-        const apiKey = this.elements.apiKeyInput.value.trim();
+        const input = this.elements.apiKeyInput as any;
+        const apiKey = input.value.trim();
         
         if (!apiKey) {
             this.ui.showApiKeyError('Please enter an API key');

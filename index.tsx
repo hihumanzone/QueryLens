@@ -2,7 +2,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
-import katex from "katex";
+
+// KaTeX is loaded via CDN, declare global type
+declare global {
+    interface Window {
+        katex: any;
+    }
+}
 
 interface DOMElements {
     cameraView: HTMLElement;
@@ -181,10 +187,16 @@ class UIManager {
     }
 
     private processLaTeX(text: string): string {
+        // Check if KaTeX is available
+        if (!window.katex) {
+            console.warn('KaTeX not loaded, skipping LaTeX processing');
+            return text;
+        }
+
         // Process block LaTeX ($$...$$)
         text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
             try {
-                return katex.renderToString(latex, { 
+                return window.katex.renderToString(latex, { 
                     displayMode: true,
                     throwOnError: false
                 });
@@ -197,7 +209,7 @@ class UIManager {
         // Process inline LaTeX ($...$)
         text = text.replace(/\$([^$\n]+?)\$/g, (match, latex) => {
             try {
-                return katex.renderToString(latex, { 
+                return window.katex.renderToString(latex, { 
                     displayMode: false,
                     throwOnError: false
                 });

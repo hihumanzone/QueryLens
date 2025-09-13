@@ -2,6 +2,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import katex from "katex";
 
 interface DOMElements {
     cameraView: HTMLElement;
@@ -127,6 +128,8 @@ class GeminiService {
 }
 
 class UIManager {
+    private rawMarkdownText: string = '';
+
     constructor(private elements: DOMElements) {}
 
     showView(viewId: 'camera-view' | 'preview-view' | 'result-view') {
@@ -177,13 +180,49 @@ class UIManager {
         this.elements.modelSelector.classList.remove('hidden');
     }
 
+    private processLaTeX(text: string): string {
+        // Process block LaTeX ($$...$$)
+        text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
+            try {
+                return katex.renderToString(latex, { 
+                    displayMode: true,
+                    throwOnError: false
+                });
+            } catch (error) {
+                console.warn('LaTeX block rendering error:', error);
+                return match;
+            }
+        });
+
+        // Process inline LaTeX ($...$)
+        text = text.replace(/\$([^$\n]+?)\$/g, (match, latex) => {
+            try {
+                return katex.renderToString(latex, { 
+                    displayMode: false,
+                    throwOnError: false
+                });
+            } catch (error) {
+                console.warn('LaTeX inline rendering error:', error);
+                return match;
+            }
+        });
+
+        return text;
+    }
+
     displayAnswer(text: string, type: 'answer' | 'error') {
         this.elements.answerSection.classList.toggle('is-error', type === 'error');
         
         if (type === 'error') {
+            this.rawMarkdownText = ''; // Clear for errors
             this.elements.answerContainer.innerHTML = `<p>${text}</p>`;
         } else {
-            const dirtyHtml = marked.parse(text) as string;
+            // Store the raw markdown text for copying
+            this.rawMarkdownText = text;
+            
+            // Process LaTeX before markdown
+            const latexProcessed = this.processLaTeX(text);
+            const dirtyHtml = marked.parse(latexProcessed) as string;
             const cleanHtml = DOMPurify.sanitize(dirtyHtml);
             this.elements.answerContainer.innerHTML = cleanHtml;
         }
@@ -242,8 +281,10 @@ class UIManager {
     }
 
     copyAnswerToClipboard() {
-        const { answerContainer, copyBtn } = this.elements;
-        this.copyTextToClipboard(answerContainer.innerText, copyBtn);
+        const { copyBtn } = this.elements;
+        // Use raw markdown text instead of rendered innerText
+        const textToCopy = this.rawMarkdownText || this.elements.answerContainer.innerText;
+        this.copyTextToClipboard(textToCopy, copyBtn);
     }
     
     copyTranscriptionToClipboard() {
@@ -393,6 +434,41 @@ class CropManager {
 
     public isCropped(): boolean {
         return this.isCropDefined;
+    }
+
+    public getCropRect(): { x: number; y: number; width: number; height: number } | null {
+        return this.isCropDefined ? { ...this.cropRect } : null;
+    }
+
+    public setCropRect(rect: { x: number; y: number; width: number; height: number }): void {
+        this.cropRect = { ...rect };
+        this.isCropDefined = true;
+        this.cropBoxEl.classList.remove('hidden');
+        this.cropBoxEl.addEventListener('pointerdown', this.onManipulateStart);
+        this.constrainCropBox();
+        this.updateStyle();
+    }
+
+    public transformCropForRotation(canvasWidth: number, canvasHeight: number): void {
+        if (!this.isCropDefined) return;
+        
+        // For 90° counter-clockwise rotation:
+        // (x, y) -> (y, canvasWidth - x - width)
+        // width and height swap
+        const newX = this.cropRect.y;
+        const newY = canvasWidth - this.cropRect.x - this.cropRect.width;
+        const newWidth = this.cropRect.height;
+        const newHeight = this.cropRect.width;
+        
+        this.cropRect = {
+            x: newX,
+            y: newY,
+            width: newWidth,
+            height: newHeight
+        };
+        
+        this.constrainCropBox();
+        this.updateStyle();
     }
 
     public applyCropToCanvas(): void {
@@ -717,6 +793,10 @@ class App {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        // Store crop before rotation
+        const cropRect = this.cropper.getCropRect();
+        const originalWidth = canvas.width;
+
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         if (!tempCtx) return;
@@ -734,7 +814,12 @@ class App {
         ctx.drawImage(tempCanvas, -tempCanvas.width / 2, -tempCanvas.height / 2);
         ctx.restore();
 
-        this.cropper.clear();
+        // Restore and transform crop if it existed
+        if (cropRect) {
+            this.cropper.transformCropForRotation(originalWidth, tempCanvas.height);
+        } else {
+            this.cropper.clear();
+        }
     }
 
     private capturePhoto() {

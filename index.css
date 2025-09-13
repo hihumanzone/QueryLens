@@ -404,17 +404,6 @@ button:focus-visible {
     margin-bottom: 0;
 }
 
-#answer-container ul, #answer-container ol {
-    margin-left: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-    padding-left: var(--spacing-sm);
-}
-
-#answer-container li {
-    margin-bottom: var(--spacing-xs);
-    line-height: 1.6;
-}
-
 #answer-container strong, #answer-container b {
     font-weight: 600;
     color: var(--primary-text);

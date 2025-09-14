@@ -118,6 +118,51 @@ export class UIManager {
   }
 
   /**
+   * Get KaTeX from global context
+   */
+  private getKatex(): any {
+    // @ts-ignore - KaTeX is loaded globally via CDN
+    return window.katex;
+  }
+
+  /**
+   * Process LaTeX expressions in text using KaTeX
+   */
+  private processLatex(text: string): string {
+    const katex = this.getKatex();
+    if (!katex) {
+      console.warn('KaTeX not loaded, skipping LaTeX processing');
+      return text;
+    }
+
+    try {
+      // Handle display math ($$...$$)
+      text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
+        try {
+          return katex.renderToString(latex.trim(), { displayMode: true });
+        } catch (error) {
+          console.warn('LaTeX rendering error:', error);
+          return match; // Return original if rendering fails
+        }
+      });
+
+      // Handle inline math ($...$)
+      text = text.replace(/(?<!\$)\$(?!\$)(.*?)\$(?!\$)/g, (match, latex) => {
+        try {
+          return katex.renderToString(latex.trim(), { displayMode: false });
+        } catch (error) {
+          console.warn('LaTeX rendering error:', error);
+          return match; // Return original if rendering fails
+        }
+      });
+    } catch (error) {
+      console.warn('LaTeX processing error:', error);
+    }
+
+    return text;
+  }
+
+  /**
    * Display answer or error message
    */
   displayAnswer(text: string, type: DisplayType): void {
@@ -126,7 +171,9 @@ export class UIManager {
     if (type === 'error') {
       this.elements.answerContainer.innerHTML = `<p>${text}</p>`;
     } else {
-      const dirtyHtml = marked.parse(text) as string;
+      // Process LaTeX first, then Markdown
+      const latexProcessed = this.processLatex(text);
+      const dirtyHtml = marked.parse(latexProcessed) as string;
       const cleanHtml = DOMPurify.sanitize(dirtyHtml);
       this.elements.answerContainer.innerHTML = cleanHtml;
     }

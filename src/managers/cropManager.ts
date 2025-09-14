@@ -55,6 +55,34 @@ export class CropManager {
   }
   
   /**
+   * Transform crop coordinates for 90-degree counter-clockwise rotation
+   * This preserves the crop selection when the canvas is rotated
+   */
+  public transformCropForRotation(): void {
+    if (!this.isCropDefined) return;
+
+    const canvasWidth = this.canvasEl.width;
+    const canvasHeight = this.canvasEl.height;
+
+    // For a 90-degree counter-clockwise rotation:
+    // New coordinates (x', y') = (y, canvasWidth - x - width)
+    // New dimensions: width' = height, height' = width
+    const newCropRect: CropRect = {
+      x: this.cropRect.y,
+      y: canvasWidth - this.cropRect.x - this.cropRect.width,
+      width: this.cropRect.height,
+      height: this.cropRect.width
+    };
+
+    this.cropRect = newCropRect;
+    
+    // Update visual representation if crop is active
+    if (this.isCropDefined) {
+      this.updateStyle();
+    }
+  }
+
+  /**
    * Clear crop selection
    */
   public clear(): void {

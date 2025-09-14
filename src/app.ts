@@ -154,8 +154,9 @@ export class App {
    * Rotate preview image by 90 degrees
    */
   private rotatePreviewImage(): void {
+    // Transform crop coordinates before rotating the canvas
+    this.cropper.transformCropForRotation();
     ImageUtils.rotateCanvas(this.elements.canvasElement);
-    this.cropper.clear();
   }
 
   /**
